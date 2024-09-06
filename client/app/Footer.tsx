@@ -1,4 +1,4 @@
-//Footer.tsx
+//app/Footer.tsx
 import React from 'react';
 
 const Footer: React.FC = () => {
