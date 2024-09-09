@@ -27,5 +27,87 @@
       "cart": [],
       "id": 3
     }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Thời Trang Nam"
+    },
+    {
+      "id": 2,
+      "name": "Thời Trang Nữ"
+    },
+    {
+      "id": 3,
+      "name": "Điện thoại & Phụ kiện"
+    },
+    {
+      "id": 4,
+      "name": "Mẹ và Bé"
+    },
+    {
+      "id": 5,
+      "name": "Thiết bị điện điện tử"
+    },
+    {
+      "id": 6,
+      "name": "Nhà Cửa & Đời sống"
+    },
+    {
+      "id": 7,
+      "name": "Máy Tính & Laptop"
+    },
+    {
+      "id": 8,
+      "name": "Sắc Đẹp"
+    },
+    {
+      "id": 9,
+      "name": "Máy Ảnh & Máy Quay Phim"
+    },
+    {
+      "id": 10,
+      "name": "Sức Khỏe"
+    },
+    {
+      "id": 11,
+      "name": "Đồng Hồ"
+    },
+    {
+      "id": 12,
+      "name": "Giày Dép Nữ"
+    },
+    {
+      "id": 13,
+      "name": "Giày Dép Nam"
+    },
+    {
+      "id": 14,
+      "name": "Túi Ví Nữ"
+    },
+    {
+      "id": 15,
+      "name": "Thiết Bị Điện Gia Dụng"
+    },
+    {
+      "id": 16,
+      "name": "Phụ Kiện & Trang Sức Nữ"
+    },
+    {
+      "id": 17,
+      "name": "Thể Thao & Du Lịch"
+    },
+    {
+      "id": 18,
+      "name": "Bách Hóa Online"
+    },
+    {
+      "id": 19,
+      "name": "Ô Tô & Xe Máy & Xe Đạp"
+    },
+    {
+      "id": 20,
+      "name": "Nhà Sách Online"
+    }
   ]
 }

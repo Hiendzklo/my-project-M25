@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation'; // Sử dụng useRouter từ next/navigation trong App Router
-import { FaHome, FaBox, FaUsers, FaClipboardList, FaQuestionCircle, FaEnvelope, FaSignOutAlt } from 'react-icons/fa';
+import { FaHome, FaBox, FaUsers, FaClipboardList, FaQuestionCircle, FaEnvelope, FaSignOutAlt, FaTags } from 'react-icons/fa'; // Thêm icon FaTags
 
 interface SidebarProps {
   handleLogout: () => void;
@@ -23,8 +23,8 @@ const Sidebar: React.FC<SidebarProps> = ({ handleLogout }) => {
   return (
     <aside className="w-64 bg-gray-900 text-white h-screen flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-center h-16 bg-gray-800">
-        <h2 className="text-xl font-bold">Rikkei Academy</h2>
+      <div className="flex items-center justify-center h-16 bg-red-600">
+        <h1 className="text-xl font-bold">Shopee</h1>
       </div>
 
       {/* Navigation */}
@@ -60,6 +60,15 @@ const Sidebar: React.FC<SidebarProps> = ({ handleLogout }) => {
               className="flex items-center py-2 px-4 rounded hover:bg-gray-700 w-full text-left"
             >
               <FaUsers className="mr-3" /> Customers
+            </button>
+          </li>
+          {/* Thêm mục mới cho Categorys */}
+          <li>
+            <button
+              onClick={() => navigateTo('/admin/categorys')} // Điều hướng tới trang quản lý danh mục
+              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 w-full text-left"
+            >
+              <FaTags className="mr-3" /> Categorys
             </button>
           </li>
         </ul>
