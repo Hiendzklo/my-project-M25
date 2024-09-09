@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../../store/axiosConfig';
 import Product from './Product';
-import { FaSort } from 'react-icons/fa';
 import AddProductForm from './AddProductForm';
 
 interface Product {
@@ -29,6 +28,7 @@ const ProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState(''); // Thêm state để lưu giá trị tìm kiếm
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -87,19 +87,26 @@ const ProductList: React.FC = () => {
     return category ? category.name : 'Unknown';
   };
 
+  // Tìm kiếm sản phẩm dựa trên tên sản phẩm
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
     <div className="p-4 bg-white shadow rounded-lg w-full">
       {showAddForm ? (
-        <AddProductForm onCancel={() => {
-          setShowAddForm(false);
-          fetchProducts();
-        }} />
+        <AddProductForm
+          onCancel={() => {
+            setShowAddForm(false);
+            fetchProducts();
+          }}
+        />
       ) : showEditForm && selectedProduct ? (
         <AddProductForm
           product={selectedProduct}
@@ -118,13 +125,17 @@ const ProductList: React.FC = () => {
             >
               + Add Product
             </button>
-            <div className="relative">
-              <select className="bg-gray-100 rounded-full px-4 py-2">
-                <option>Sort by: ID</option>
-              </select>
-              <FaSort className="absolute top-3 right-3 text-gray-400" />
-            </div>
+
+            {/* Thanh tìm kiếm sản phẩm */}
+            <input
+              type="text"
+              className="bg-gray-100 rounded-full px-4 py-2"
+              placeholder="Search product by name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
+
           <table className="min-w-full bg-white border">
             <thead className="bg-gray-200">
               <tr>
@@ -152,10 +163,11 @@ const ProductList: React.FC = () => {
               ))}
             </tbody>
           </table>
+
           <div className="flex justify-center mt-4">
             <nav>
               <ul className="flex list-none">
-                {Array.from({ length: Math.ceil(products.length / productsPerPage) }, (_, index) => (
+                {Array.from({ length: Math.ceil(filteredProducts.length / productsPerPage) }, (_, index) => (
                   <li key={index} className={`mx-1 ${currentPage === index + 1 ? 'bg-gray-300' : ''}`}>
                     <button onClick={() => paginate(index + 1)} className="px-3 py-1 rounded-full">
                       {index + 1}
