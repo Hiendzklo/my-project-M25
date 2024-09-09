@@ -1,7 +1,6 @@
 "use client"; // Đảm bảo đây là Client Component
 
 import React from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // Sử dụng useRouter từ next/navigation trong App Router
 import { FaHome, FaBox, FaUsers, FaClipboardList, FaQuestionCircle, FaEnvelope, FaSignOutAlt } from 'react-icons/fa';
 
@@ -17,6 +16,10 @@ const Sidebar: React.FC<SidebarProps> = ({ handleLogout }) => {
     router.push('/admin/login'); // Điều hướng tới trang login
   };
 
+  const navigateTo = (path: string) => {
+    router.push(path); // Hàm điều hướng tới đường dẫn được chỉ định
+  };
+
   return (
     <aside className="w-64 bg-gray-900 text-white h-screen flex flex-col">
       {/* Header */}
@@ -28,24 +31,36 @@ const Sidebar: React.FC<SidebarProps> = ({ handleLogout }) => {
       <nav className="flex-1 px-4 py-2 overflow-y-auto">
         <ul className="space-y-4">
           <li>
-            <Link href="/" className="flex items-center py-2 px-4 rounded hover:bg-gray-700">
+            <button
+              onClick={() => navigateTo('/admin/dashboard')}
+              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 w-full text-left"
+            >
               <FaHome className="mr-3" /> Dashboard
-            </Link>
+            </button>
           </li>
           <li>
-            <Link href="/products" className="flex items-center py-2 px-4 rounded hover:bg-gray-700 bg-gray-800">
+            <button
+              onClick={() => navigateTo('/admin/products')} // Cập nhật đường dẫn tới trang admin/products
+              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 w-full text-left"
+            >
               <FaBox className="mr-3" /> Products
-            </Link>
+            </button>
           </li>
           <li>
-            <Link href="/orders" className="flex items-center py-2 px-4 rounded hover:bg-gray-700">
+            <button
+              onClick={() => navigateTo('/admin/orders')} // Điều hướng đến trang Orders
+              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 w-full text-left"
+            >
               <FaClipboardList className="mr-3" /> Orders
-            </Link>
+            </button>
           </li>
           <li>
-            <Link href="/customers" className="flex items-center py-2 px-4 rounded hover:bg-gray-700">
+            <button
+              onClick={() => navigateTo('/admin/customers')}
+              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 w-full text-left"
+            >
               <FaUsers className="mr-3" /> Customers
-            </Link>
+            </button>
           </li>
         </ul>
       </nav>
@@ -54,14 +69,20 @@ const Sidebar: React.FC<SidebarProps> = ({ handleLogout }) => {
       <div className="px-4 py-2 border-t border-gray-700">
         <ul className="space-y-2">
           <li>
-            <Link href="#" className="flex items-center py-2 px-4 rounded hover:bg-gray-700">
+            <button
+              onClick={() => navigateTo('/help')}
+              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 w-full text-left"
+            >
               <FaQuestionCircle className="mr-3" /> Help
-            </Link>
+            </button>
           </li>
           <li>
-            <Link href="#" className="flex items-center py-2 px-4 rounded hover:bg-gray-700">
+            <button
+              onClick={() => navigateTo('/contact')}
+              className="flex items-center py-2 px-4 rounded hover:bg-gray-700 w-full text-left"
+            >
               <FaEnvelope className="mr-3" /> Contact us
-            </Link>
+            </button>
           </li>
           <li>
             <button

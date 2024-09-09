@@ -4,7 +4,28 @@
       "id": 1,
       "username": "admin",
       "password": "admin123",
-      "role": "admin"
+      "role": "admin",
+      "isActive": true
+    },
+    {
+      "username": "lilia123",
+      "email": "hiendzklo@gmail.com",
+      "password": "123456",
+      "role": "User",
+      "date": "2024-09-09T05:57:30.719Z",
+      "isActive": true,
+      "cart": [],
+      "id": 2
+    },
+    {
+      "username": "yasuo123",
+      "email": "hienklo1@gmail.com",
+      "password": "123456",
+      "role": "User",
+      "date": "2024-09-09T05:58:13.698Z",
+      "isActive": true,
+      "cart": [],
+      "id": 3
     }
   ]
 }
