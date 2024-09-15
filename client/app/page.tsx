@@ -9,6 +9,7 @@ import FlashSaleSection from './admin/users/FlashSaleSection';
 import PromotionSection from './admin/users/PromotionSection';
 import TopProductsSection from './admin/users/TopProductsSection';
 import ProductUser from './admin/users/ProductUser';
+import Footer from './Footer';
 
 
 const HomePage: React.FC = () => {
@@ -21,6 +22,7 @@ const HomePage: React.FC = () => {
       <PromotionSection/>
       <TopProductsSection/>
       <ProductUser/>
+      <Footer/>
     </CartProvider>
   );
 };

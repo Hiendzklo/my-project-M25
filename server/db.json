@@ -433,5 +433,20 @@
       "discount": 26,
       "id": 24
     }
-  ]
+  ],
+  "carts": [
+    {
+      "items": [
+        {
+          "id": 2,
+          "name": "Quần Tây Nam - Quần Âu Nam cao cấp Trendyman Công Sở Dáng Ôm Chuẩn Vải lụa Không Nhăn Không Xù cao cấp",
+          "price": 85800,
+          "quantity": 2,
+          "image": "https://firebasestorage.googleapis.com/v0/b/project-m24-e8bd3.appspot.com/o/images%2Fqu%E1%BA%A7n%20t%C3%A2y%20nam.jpg?alt=media&token=f560e2f6-9e67-4b2c-89cd-0d3f1fc538f4"
+        }
+      ],
+      "id": 1
+    }
+  ],
+  "orders": []
 }

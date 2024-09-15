@@ -1,5 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axiosInstance from '../../../store/axiosConfig';  // Chắc chắn đường dẫn axiosConfig đúng với cấu trúc Next.js
+// app/admin/users/CartContext.tsx
+'use client';
+
+import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import axiosInstance from '../../../store/axiosConfig'; // Sử dụng axiosInstance thay vì axios
 
 export interface CartItem {
   id: number;
@@ -15,12 +18,11 @@ interface CartContextProps {
   removeFromCart: (id: number) => void;
   clearCart: () => void;
   updateQuantity: (id: number, quantity: number) => void;
+  checkout: (userId: number) => Promise<void>;
 }
 
-// Tạo context cho Cart
 const CartContext = createContext<CartContextProps | undefined>(undefined);
 
-// Hook để sử dụng context
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
@@ -29,110 +31,130 @@ export const useCart = () => {
   return context;
 };
 
-// CartProvider component
-export const CartProvider: React.FC<{ username: string; children: ReactNode }> = ({ username, children }) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+type CartAction =
+  | { type: 'SET_CART'; payload: CartItem[] }
+  | { type: 'ADD_ITEM'; payload: CartItem }
+  | { type: 'REMOVE_ITEM'; payload: number }
+  | { type: 'CLEAR_CART' }
+  | { type: 'UPDATE_QUANTITY'; payload: { id: number; quantity: number } };
 
+const cartReducer = (state: CartItem[], action: CartAction): CartItem[] => {
+  switch (action.type) {
+    case 'SET_CART':
+      return action.payload;
+    case 'ADD_ITEM': {
+      const existingItem = state.find((item) => item.id === action.payload.id);
+      if (existingItem) {
+        return state.map((item) =>
+          item.id === action.payload.id
+            ? { ...item, quantity: item.quantity + action.payload.quantity }
+            : item
+        );
+      } else {
+        return [...state, action.payload];
+      }
+    }
+    case 'REMOVE_ITEM':
+      return state.filter((item) => item.id !== action.payload);
+    case 'CLEAR_CART':
+      return [];
+    case 'UPDATE_QUANTITY':
+      return state.map((item) =>
+        item.id === action.payload.id ? { ...item, quantity: action.payload.quantity } : item
+      );
+    default:
+      return state;
+  }
+};
+
+export const CartProvider: React.FC<{ children: ReactNode; userId: number }> = ({ children, userId }) => {
+  const [cartItems, dispatch] = useReducer(cartReducer, []);
+
+  // Khởi tạo giỏ hàng từ `db.json` thông qua API khi component được mount
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        // Gọi API lấy thông tin giỏ hàng từ username
-        const response = await axiosInstance.get(`/users?username=${username}`);
-        const user = response.data[0];
-
-        if (user && user.cart) {
-          // Gọi API lấy chi tiết sản phẩm trong giỏ hàng
-          const productResponses = await Promise.all(
-            user.cart.map((item: any) => axiosInstance.get(`/products/${item.productId}`))
-          );
-          
-          // Xử lý dữ liệu sản phẩm
-          const products = productResponses.map(res => res.data);
-          const cartItems = user.cart.map((item: any, index: number) => ({
-            id: item.productId,
-            quantity: item.quantity,
-            name: products[index].name,
-            price: products[index].price,
-            image: products[index].image || ''
-          }));
-          setCartItems(cartItems);
+        const response = await axiosInstance.get(`/carts?userId=${userId}`);
+        if (response.data.length > 0) {
+          dispatch({ type: 'SET_CART', payload: response.data[0].items });
         }
       } catch (error) {
-        console.error('Error fetching cart items:', error);
+        console.error('Error fetching cart:', error);
       }
     };
 
     fetchCart();
-  }, [username]);
+  }, [userId]);
 
-  const addToCart = async (item: CartItem) => {
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find((i) => i.id === item.id);
-      if (existingItem) {
-        return prevItems.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
-        );
+  // Hàm cập nhật giỏ hàng trong `db.json`
+  const updateCartInDB = async (items: CartItem[]) => {
+    try {
+      const response = await axiosInstance.get(`/carts?userId=${userId}`);
+      if (response.data.length > 0) {
+        await axiosInstance.patch(`/carts/${response.data[0].id}`, { items });
       } else {
-        return [...prevItems, item];
+        await axiosInstance.post(`/carts`, { userId, items });
       }
-    });
-
-    try {
-      const response = await axiosInstance.get(`/users?username=${username}`);
-      const user = response.data[0];
-      const updatedCart = [...user.cart, { productId: item.id, quantity: item.quantity }];
-      await axiosInstance.patch(`/users/${user.id}`, { cart: updatedCart });
     } catch (error) {
-      console.error('Error adding to cart:', error);
+      console.error('Error updating cart:', error);
     }
   };
 
-  const removeFromCart = async (id: number) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
-
-    try {
-      const response = await axiosInstance.get(`/users?username=${username}`);
-      const user = response.data[0];
-      const updatedCart = user.cart.filter((item: any) => item.productId !== id);
-      await axiosInstance.patch(`/users/${user.id}`, { cart: updatedCart });
-    } catch (error) {
-      console.error('Error removing from cart:', error);
-    }
+  const addToCart = (item: CartItem) => {
+    const updatedItems = cartReducer(cartItems, { type: 'ADD_ITEM', payload: item });
+    dispatch({ type: 'SET_CART', payload: updatedItems });
+    updateCartInDB(updatedItems);
   };
 
-  const clearCart = async () => {
-    setCartItems([]);
-
-    try {
-      const response = await axiosInstance.get(`/users?username=${username}`);
-      const user = response.data[0];
-      await axiosInstance.patch(`/users/${user.id}`, { cart: [] });
-    } catch (error) {
-      console.error('Error clearing cart:', error);
-    }
+  const removeFromCart = (id: number) => {
+    const updatedItems = cartReducer(cartItems, { type: 'REMOVE_ITEM', payload: id });
+    dispatch({ type: 'SET_CART', payload: updatedItems });
+    updateCartInDB(updatedItems);
   };
 
-  const updateQuantity = async (id: number, quantity: number) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, quantity } : item
-      )
-    );
+  const clearCart = () => {
+    dispatch({ type: 'CLEAR_CART' });
+    updateCartInDB([]);
+  };
+
+  const updateQuantity = (id: number, quantity: number) => {
+    const updatedItems = cartReducer(cartItems, { type: 'UPDATE_QUANTITY', payload: { id, quantity } });
+    dispatch({ type: 'SET_CART', payload: updatedItems });
+    updateCartInDB(updatedItems);
+  };
+
+  const checkout = async (userId: number) => {
+    if (cartItems.length === 0) {
+      alert('Giỏ hàng đang trống!');
+      return;
+    }
+
+    const order = {
+      userId: userId,
+      orderDate: new Date().toISOString(),
+      status: 'Pending',
+      totalAmount: cartItems.reduce((total, item) => total + item.price * item.quantity, 0),
+      items: cartItems.map((item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+    };
 
     try {
-      const response = await axiosInstance.get(`/users?username=${username}`);
-      const user = response.data[0];
-      const updatedCart = user.cart.map((item: any) =>
-        item.productId === id ? { ...item, quantity } : item
-      );
-      await axiosInstance.patch(`/users/${user.id}`, { cart: updatedCart });
+      await axiosInstance.post('/orders', order); // Lưu đơn hàng vào `orders`
+      clearCart();
+      alert('Đơn hàng đã được đặt thành công!');
     } catch (error) {
-      console.error('Error updating quantity:', error);
+      console.error('Error placing order:', error);
+      alert('Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.');
     }
   };
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart, updateQuantity }}>
+    <CartContext.Provider
+      value={{ cartItems, addToCart, removeFromCart, clearCart, updateQuantity, checkout }}
+    >
       {children}
     </CartContext.Provider>
   );
