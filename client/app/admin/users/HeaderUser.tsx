@@ -1,11 +1,11 @@
 // app/admin/users/HeaderUser.tsx
-"use client"; // Thêm vào khi sử dụng các hook như useState hoặc useEffect
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { FaFacebook, FaInstagram, FaBell, FaQuestionCircle, FaShoppingCart, FaUser } from 'react-icons/fa';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCart } from './CartContext'; // Nếu bạn có context riêng cho Cart
+import { useCart } from './CartContext'; // Đảm bảo đường dẫn tới CartContext
 import axiosInstance from '../../../store/axiosConfig'; // Gọi API với axios
 
 interface HeaderUserProps {
@@ -65,7 +65,7 @@ const HeaderUser: React.FC<HeaderUserProps> = ({ username, avatar }) => {
 
   return (
     <>
-       <header className="bg-gradient-to-r from-red-500 to-orange-500 text-white fixed w-full top-0 z-50">
+      <header className="bg-gradient-to-r from-red-500 to-orange-500 text-white fixed w-full top-0 z-50">
         <div className="container mx-auto flex justify-between items-center py-2 text-base">
           <div className="flex items-center space-x-4">
             <a href="#" className="hover:underline">Kênh Người Bán</a>
@@ -96,8 +96,9 @@ const HeaderUser: React.FC<HeaderUserProps> = ({ username, avatar }) => {
                   )}
                   {username}
                 </button>
-                <div className="absolute right-0 mt-1 w-48 bg-white text-black rounded shadow hidden group-hover:block">
-                  <Link href="/my-account" className="block px-4 py-2 hover:bg-gray-300">Tài Khoản Của Tôi</Link>
+                <div className="absolute right-0 mt-1 w-48 bg-white text-black rounded shadow opacity-0 group-hover:opacity-100 group-hover:visible transition-opacity duration-300 delay-150 invisible">
+                  <div className="absolute -top-2 right-4 w-4 h-4 bg-white rotate-45 transform -translate-y-1/2"></div> {/* Mũi tên chỉ */}
+                  <Link href="/myAccount" className="block px-4 py-2 hover:bg-gray-300">Tài Khoản Của Tôi</Link>
                   <Link href="/order-history" className="block px-4 py-2 hover:bg-gray-300">Đơn Mua</Link>
                   <button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-gray-300">Đăng Xuất</button>
                 </div>
@@ -168,8 +169,7 @@ const HeaderUser: React.FC<HeaderUserProps> = ({ username, avatar }) => {
           </div>
         </div>
       </header>
-      <div className="pt-32">
-      </div>
+      <div className="pt-32"></div>
       <br/><br/><br/><br/>
     </>
   );
